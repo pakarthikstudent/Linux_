@@ -1,0 +1,484 @@
+OS
+---
+  ->System Software
+  
+  User 
+  ---------
+  OS
+  ---------
+  H/W: CPU RAM HD IO Net
+
+1940 
+  Telcomm Embedded 
+	
+  osA    osB  osC
+   |	  |    |
+   x10   x11  x12
+
+ AT&T    -> Unix - 1969/ 1971/72 
+		....
+  asm ->bcpl ->b+ ->C //
+
+ minix ->edu
+
+ GNUProject - 1983 
+ ..........
+  bash
+  gcc
+  gdb 
+  grub2
+  gzip
+  ..
+ LinusTorvald ->Kernel ->GNU ->GNULinux ->1991
+
+ Kernel - Core part of os
+ ------//
+
+ Kernel + Tools  =>RedHat Linux
+	  -----  =>Ubuntu Linux
+		 =>Oracle Linux
+	  |-RedHat,Oracle,Debian ...
+
+# RedHat Linux
+root@host~]# uname
+Linux
+root@host~]# yum install httpd
+
+
+# Ubuntu Linux
+root@host~]# uname
+Linux
+
+root@host~]# apt-get install apache2
+
+######################################################################################
+
+Linux - Kernel
+	  |--->File, Process
+	  |
+	  |--->File - Data (Collection of bytes) under the storage device.
+	  |--->Process - Data under the CPU
+					----//Fetch ->Stores ->Execute
+						 			 
+User: App
+------------------------------------------------
+	[systemcall] ->systemcall() = FD (FileDescriptor)
+	 |
+	 |		    __________________
+	FileSystem <--> PCB |IPC;SCHED;MM;Net|
+	 |		    ------------------
+	Device Driver
+	 |
+	Device Controller
+	 |
+-------------------------------------------------
+H/W:  CPU  RAM HD IO Net 
+
+
+C - program		C++		  perl		    ruby  	   bash 
+printf("Hello\n");	cout<<"Hello\n";  print "Hello\n";  puts("Hello")  echo "Hello"
+------------------------------------------------------------------------------------------
+		|
+		write(1,"Hello") = FD	FD = 0 <STDIN>; FD = 1 (STDOUT) FD = 2 (STDERR)
+					FD = 0x34343 (memory Call)
+					FD = -1 <== FailedCall	
+					FD = 3 to 2 pow 32/64 - ValidCalls
+
+
+
+Shell - Interface between user and kernel
+
+user: command <or> app
+      ------------------//shell
+	|
+	systemcall
+	|
+	FS <->pcb
+	|
+	DD
+	|
+	DC
+	|
+     -------------------
+	H/W
+
+-------------------------------------------------------------
+ ps
+555  bash
+
+ gcc -o p1 p1.c
+ 
+ p1 <== File - objectFile
+ ./p1 <== Process - (File p1 - now its running state)
+ ... (PID:1001)
+ ...
+ ...
+ End of the line
+
+ ./p1 <== Process
+	 (PID:1002)
+  ....
+  ....
+ End of the line
+
+-------------------------------------------------------------
+root@host~]# gcc p1.c -o p1 <== User process
+
+root@host~]# mysql -u root -p <== User process
+mysql>				
+
+
+root@host~]# python p1.py <== user process
+
+root@host~]# <Command> <== user process
+			----------------------------//parent is working shell.
+
+Linux Boot Processing Steps
+----------------------------
+OFF =>PowerOn =>PowerOnSelfTest(POST) ->MasterBootRecord(MBR) ->BootLoader(grub/grub2)
+		---------------------   ---------------------   ---------------------(A)
+					 <partitionTable            
+					 Bootloader details>
+--(A) --->Load the Kernel -->SystemD PID:1 (system process - ?)
+				|
+				list of processes are started //runlevel
+				|
+				getty(?) <or> Login:________
+					      password:________ //x-window
+				|
+				Shell(CLI) <or>  Desktop(GUI)
+				|			|
+				User IO			User IO <== user process
+
+#################################################################################################
+
+command <-- executable binary file
+
+command -<option>
+	    |_____ more specific results
+
+uname 
+uname -r
+  Vs		
+ls
+ls -r
+
+man <command> {Enter}
+---  -------
+
+man command {Enter}
+
+..
+q <== Quit
+--------------------------------------------------------------------------------
+command |less <== page by page
+		  
+   Home End PgUp PgDn //Keys
+   <or>
+   cursor keys
+
+ps -e|less
+    |
+    |__list of all the process(system+user)
+ <or>
+ps -A|less	  
+    |___list of all the process(system+user)
+
+pwd 
+-----//current working directory
+
+studet@host project]$ pwd {Enter}
+--------------------- 
+  |			/home/student/L1/L2/project
+primary prompt
+		 
+		   / <== like a MyComputer in winx - root directory
+		   |
+ ------------------------------------------------
+ |	|	|	|	  |	  |     |
+ bin/	etc/	boot/	root/	home/	 dev/   mnt/ .. <== sub-directories 
+				  |
+				  |-->arun/
+				  |-->vijay/
+				  |-->anu/
+				  |-->student/
+				  	   |
+					   L1/
+					    |__L2/
+						|__project/
+
+
+To create new directory
+mkdir <DirectoryName>
+|
+mkdir D1
+
+To change the D1 directory
+cd <DirectoryName>
+|
+cd D1
+pwd
+
+mkdir D1 D2 D3
+ls
+D1 D2 D3
+
+L1/
+ |_L2/
+    |__L3
+     
+mkdir -p L1/L2/L3
+
+To Copy directory Files
+-------------------------
+cp -r <oldDirectory> <newdirectory>
+    
+mv command
+----------
+  |->1. rename
+  |->2. move
+
+To rename directory file
+-------------------------
+mv <oldDirectory> <newdirectory>
+	
+[student@krosumlabs ~]$ ls
+D1  D2  D3  D4  dd  Dx2  L1  p103.sh  p18.sh  p1.txt  p23.sh  pp.txt  sample1
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$ mv sample1 demo1 # rename
+[student@krosumlabs ~]$ ls
+D1  D2  D3  D4  dd  demo1  Dx2  L1  p103.sh  p18.sh  p1.txt  p23.sh  pp.txt
+		    ^^^^^
+
+To move the directory from dir1 to dir2 <or> cut/paste
+--------------------------------------------
+mv <oldDir1> <oldDir2>
+
+[student@krosumlabs ~]$ ls
+D1  D2  D3  D4  dd  demo1  Dx2  L1  p103.sh  p18.sh  p1.txt  p23.sh  pp.txt
+---                 ------
+[student@krosumlabs ~]$ mv D1 demo1 # cut the D1 ->and paste it into demo1 directory
+				    # move the D1 to demo1
+[student@krosumlabs ~]$ ls
+D2  D3  D4  dd  demo1  Dx2  L1  p103.sh  p18.sh  p1.txt  p23.sh  pp.txt
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$ ls demo1
+D1  L2
+[student@krosumlabs ~]$
+
+To delete a directory
+---------------------------
+rmdir <directory> <== must be an empty
+
+rm -r <directory> <== delete current directory and subdirectories 
+
+###################################################################################
+
+file <filename>
+----
+ |->To determine the file type
+
+Linux File Types
+-----------------
+1. Regular File <or> Ordinary file
+	|
+	|->ASCII / Text File  - user can able to read/understand(ex:p1.java p1.c p1.log
+	|							    t1.csv t2 t2.py t1.pl..)
+	|			
+	|->ELF - user can't able to read/understand(ex: commands; compiled code..)
+		      ------------------
+
+2. Directory
+
+3. Link File (or) Symbolic link (or) Softlink  ln -s source target 
+
+4. Device file( /dev )
+		  |--->Character type device  (Keyboard,Terminal,Printer..)
+		  |--->Block type device    (HD,USB,storage devices)
+
+5. named pipe (or) FIFO 
+6. socket file  
+########################################################################################
+
+How to create a regfile <ascii/text> ?
+
+ 1. use vi <or> vim edior
+	--	--- 	//commandline editor
+
+ 2. redirection
+
+
+ 1. use vi <or> vim edior
+	--	--- 	//commandline editor
+
+
+vi <filename>{Enter}  (1)
+------------------------
+			
+	command mode - save,insert a line,delete a line/word/char
+		       copy the line/word ..
+	|
+	| press 'i' 
+	insert mode - type your input <or> write some text	
+	|
+	| press ESC
+	|
+	command mode				
+------------------------
+	ESC :w <== save the content
+	ESC :wq <== save and exit
+	ESC :q! <== force to quit - won't write the data
+	    ---
+
+cat <filename>
+cat <filename>|less
+	<or>
+less <filename>
+
+To copy reg.file		Vs	 To copy directory file
+----------------			--------------------------
+cp oldFile newFile			cp -r <oldDir> <newDir>
+		
+[student@krosumlabs Dx]$ cat p1.txt
+this is called insert mode
+we can enter some text
+write some code
+create some config parameters
+new data
+[student@krosumlabs Dx]$
+[student@krosumlabs Dx]$ vi p1.txt
+[student@krosumlabs Dx]$ vi p1.txt
+[student@krosumlabs Dx]$
+[student@krosumlabs Dx]$ ls
+p1.txt
+[student@krosumlabs Dx]$ cat p1.txt
+this is called insert mode
+we can enter some text
+write some code
+create some config parameters
+new data
+[student@krosumlabs Dx]$ cp p1.txt p2.txt
+[student@krosumlabs Dx]$ ls
+p1.txt  p2.txt
+[student@krosumlabs Dx]$ cat p2.txt
+this is called insert mode
+we can enter some text
+write some code
+create some config parameters
+new data
+[student@krosumlabs Dx]$ vi ab.c
+[student@krosumlabs Dx]$ cat ab.c
+#include<stdio.h>
+[student@krosumlabs Dx]$ cp ab.c p2.txt # overwrite 
+[student@krosumlabs Dx]$ cat p2.txt
+#include<stdio.h>
+[student@krosumlabs Dx]$ cp -i ab.c p1.txt
+cp: overwrite ‘p1.txt’? n
+[student@krosumlabs Dx]$ cat p1.txt
+this is called insert mode
+we can enter some text
+write some code
+create some config parameters
+new data
+[student@krosumlabs Dx]$ ls
+ab.c  p1.txt  p2.txt
+[student@krosumlabs Dx]$ mv ab.c sab.c
+[student@krosumlabs Dx]$ ls
+p1.txt  p2.txt  sab.c
+[student@krosumlabs Dx]$
+		
+rm <filename>
+
+#######################################################################
+wc <filename>
+No.ofLines  No.ofWords No.ofCharacters
+
+wc -l <filename>
+No.ofLines
+
+wc -w <filename>
+No.ofWords
+
+wc -c <filename>
+No.ofChars
+
+[root@krosumlabs ~]# ps -e|less
+[root@krosumlabs ~]#
+[root@krosumlabs ~]# pwd
+/root
+[root@krosumlabs ~]# wc -l /var/log/messages
+12189 /var/log/messages
+[root@krosumlabs ~]#
+[root@krosumlabs ~]#
+[root@krosumlabs ~]# ps -e|wc
+     99     396    3312
+[root@krosumlabs ~]# ps -e|wc -l
+99
+[root@krosumlabs ~]#
+
+vi <filename>
+cat <filename>
+cp -i <old> <newFile> - Copy
+mv -i <old> <newFile> - rename
+rm -i <filename>
+wc <filename>
+ 
+wc -l <filename> # no.of lines
+wc -w <filename> # no.of words
+wc -c <filename> # no.of chars
+
+#######################################################################################
+
+command -abcde
+ |
+ |__1st - command
+    |
+   then command specific option
+
+   command -a
+   command -b
+   |
+  command -ab <or> command -ba 
+we can combine multiple options any order
+
+ls {Enter} <== list of files from current directory
+
+ls <dir1> <--- list of files from dir1 directory
+
+ls -R <dir1> <-- list of files from dir1 directory and sub-directories
+   ---
+    |__Recursive 
+
+ls -R Vs ls -r
+    |	     |__reverse order
+    |
+   
+uname -r
+ls -r Vs ls -R
+cp -r
+--- ===
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
