@@ -1,0 +1,749 @@
+man <command>
+ 
+NAME
+       command - definition
+SYNOPSIS
+     command -option <args>...<argN>
+DESCRIPTION
+
+#############################################################
+
+File Permission
+----------------
+ File(F)
+      |--> by 3 users
+	      ---------				      r    w      x   
+	       1. user <or> author <or> owner - u - read,write,execute
+	       2. group			      - g - read,write,execute
+	       3. others		      - o - read,write,execute
+
+ sales	    prod		FI  <== group
+ userA 	    userD		userF
+ userB	    userE		userG
+ userC
+
+Login as: userA
+password:
+
+userA@host~]$ mkdir D1
+userA@host~]$ vi p1.txt
+...
+:wq
+userA@host~]$ ls -l 
+	 [userA] [sales]  D1
+	 [userA] [sales]  p1.txt
+
+Syntax:-
+---------
+chmod userdetails + mode  filename(s)
+		  -
++ ->To assign a permission to FILE
+- ->To remove an existing permission from FILE
+
+ls -l p1.txt
+-rw-r--r--
+|---===____
+||   |  |__________others details  - read only mode
+||   |__group details - read only mode
+||__user details - read/write - there is no execute permission
+|
+File Type
+	
+user to assign execute permission to file
+
+chmod u+x p1.txt
+
+ ls -l p1.txt
+-rwxr--r--
+|---===____
+||
+||_____________user details - user can able to read/write/execute
+FileType
+
+chmod u+wx p1.txt
+      ----
+
+chmod ug+wx p1.txt
+      -----
+	
+ls -l p1.txt
+-rwxrwxr--
+
+ls -l p2.txt
+rw-r--r--
+
+chmod ugo+x p2.txt  same as chmod a+x p2.txt 
+ls -l p2.txt			  |_all 
+rwxr-xr-x 
+---===___
+
+###############################################################################
+Tasks:
+
+Go To Login path	-> cd{enter} <or> cd ~ {enter}
+|
+Create a new directory - Day2  =>  mkdir Day2
+|
+Change to Day2 directory       =>  cd Day2
+|
+use vi command create a new file p1.txt 
+
+echo  "display list of files"
+ls
+echo  "current process"
+ps
+echo  "Today: date/time"
+date
+sleep 5
+echo "Exit from file"
+:wq <== save and exit
+|
+Assign execute permission to file # chmod a+x  p1.txt
+|
+Run a file: ./p1.txt
+
+echo one two three # command with 3 arguments
+	Vs
+echo "one two three" # command with single argument
+
+Remove execute permission from file
+then you run a file.
+----------------------------//permission denied 
+
+Another way
+--------------
+	4	2	1
+	r	w	x
+	1	1	1    ->  7
+	1	1	0    ->  6
+	1	0	1    ->  5
+	1	0	0    ->  4
+	0	0	0    ->  0
+
+chmod 764 p1.txt
+      |||
+      |||___r--
+      |rw-
+     rwx
+	
+#######################################################################################
+
+/bin
+ ----
+   |-> list of files - internal commands
+
+/usr
+  |
+  /bin
+     |->list of files - external commands - installed packages
+
+/usr/bin/ 
+
+/sbin
+    |->root user only able to access
+
+/bin	/usr/bin	/sbin
+  |	      |		    |
+  |____commands_____________|
+	|
+	executable
+      
+#####################################################################################
+
+File , Process
+	  |->pid,paddress,pstate(R+,wait,stop) ...
+
+file p1.txt
+ASCII/Text
+
+./p1.txt {Enter}
+//process 
+
+#####################################################################################
+command redirection
+----------------------
+
+root@host~]# uname
+Linux	<<<======== STDOUT (FD=1)
+
+root@host~]# unamee
+command not found <<<<=== STDERR(FD=2)
+
+command > newFile
+ |
+execute - results write to file
+
+append - adding new data to an existing content
+------
+command >> newFile
+	--
+	|->append 
+
+command >result.log same as command 1>result.log
+                                    |__FD is 1
+
+datee >err.log
+     |__ FD value is 1
+
+datee 2>err.log 
+      |__ FD value is 2
+
+command >result.log 2>err.log
+		    ----------
+
+
+
+[root@krosumlabs D1]# cat p1.txt
+echo This is sample text
+echo "Today:"
+date
+sleep 3
+echo "Login name:"
+whoami
+sleep 2
+echo Thank you
+[root@krosumlabs D1]# echo This is sample text
+This is sample text
+[root@krosumlabs D1]# echo Today
+Today
+[root@krosumlabs D1]# date
+Tue Aug  6 09:23:11 IST 2024
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# sleep 3
+[root@krosumlabs D1]# sleep 60
+^C
+[root@krosumlabs D1]# sleep 3600
+^C
+[root@krosumlabs D1]# whoami
+root
+[root@krosumlabs D1]# cat p1.txt
+echo This is sample text
+echo "Today:"
+date
+sleep 3
+echo "Login name:"
+whoami
+sleep 2
+echo Thank you
+[root@krosumlabs D1]# ls -l p1.txt
+-rw-r--r--. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls -l p1.txt
+-rw-r--r--. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# chmod u+x p1.txt
+[root@krosumlabs D1]# ls -l p1.txt
+-rwxr--r--. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]# cat p1.txt
+echo This is sample text
+echo "Today:"
+date
+sleep 3
+echo "Login name:"
+whoami
+sleep 2
+echo Thank you
+[root@krosumlabs D1]# pwd
+/root/D1
+[root@krosumlabs D1]# /root/D1/p1.txt
+This is sample text
+Today:
+Tue Aug  6 09:30:45 IST 2024
+Login name:
+root
+Thank you
+[root@krosumlabs D1]# ./p1.txt
+This is sample text
+Today:
+Tue Aug  6 09:31:25 IST 2024
+Login name:
+root
+Thank you
+[root@krosumlabs D1]# cat p1.txt
+echo This is sample text
+echo "Today:"
+date
+sleep 3
+echo "Login name:"
+whoami
+sleep 2
+echo Thank you
+[root@krosumlabs D1]# cat -n p1.txt
+     1  echo This is sample text
+     2  echo "Today:"
+     3  date
+     4  sleep 3
+     5  echo "Login name:"
+     6  whoami
+     7  sleep 2
+     8  echo Thank you
+[root@krosumlabs D1]# ./p1.txt
+This is sample text
+Today:
+Tue Aug  6 09:32:01 IST 2024
+Login name:
+root
+Thank you
+[root@krosumlabs D1]# ls -l p1.txt
+-rwxr--r--. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# chmod u-x p1.txt
+[root@krosumlabs D1]# ls -l p1.txt
+-rw-r--r--. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]# ./p1.txt
+-bash: ./p1.txt: Permission denied
+[root@krosumlabs D1]# chmod a+x p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls -l p1.txt
+-rwxr-xr-x. 1 root root 101 Aug  6 09:22 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# pwd
+/root/D1
+[root@krosumlabs D1]# /root/D1/p1.txt
+This is sample text
+Today:
+Tue Aug  6 09:40:27 IST 2024
+Login name:
+root
+Thank you
+[root@krosumlabs D1]# vi p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ./p1.txt
+This is sample text
+Today:
+Tue Aug  6 09:40:48 IST 2024
+Login name:
+root
+./p1.txt: line 8: asdfasfds: command not found
+./p1.txt: line 9: asfasdfsad: command not found
+./p1.txt: line 10: asfasfsf: command not found
+Thank you
+[root@krosumlabs D1]# sdfdsfs
+-bash: sdfdsfs: command not found
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls
+p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# chmod 644 p1.txt
+[root@krosumlabs D1]# ls -l p1.txt
+-rw-r--r--. 1 root root 131 Aug  6 09:40 p1.txt
+[root@krosumlabs D1]# chmod 777 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls -l p1.txt
+-rwxrwxrwx. 1 root root 131 Aug  6 09:40 p1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls -l /bin/date
+-rwxr-xr-x. 1 root root 62200 Sep  7  2016 /bin/date
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# file /bin/date
+/bin/date: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=f7f56dcbe63d9ae0d930d8d5656a27e7e215be6c, stripped
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ps
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+ 3915 pts/0    00:00:00 ps
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# sleep 20
+[root@krosumlabs D1]# ls
+p1.txt
+[root@krosumlabs D1]# date
+Tue Aug  6 10:10:38 IST 2024
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# date >d1.txt
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls
+d1.txt  p1.txt
+[root@krosumlabs D1]# cat d1.txt
+Tue Aug  6 10:10:43 IST 2024
+[root@krosumlabs D1]# ps >p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat p1.log
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+ 4135 pts/0    00:00:00 ps
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# uname >p1.log # overwrite
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat p1.log
+Linux
+[root@krosumlabs D1]# ps >>p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat p1.log
+Linux
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+ 4211 pts/0    00:00:00 ps
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cal >>p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat  p1.log
+Linux
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+ 4211 pts/0    00:00:00 ps
+     August 2024
+Su Mo Tu We Th Fr Sa
+             1  2  3
+ 4  5  6  7  8  9 10
+11 12 13 14 15 16 17
+18 19 20 21 22 23 24
+25 26 27 28 29 30 31
+
+[root@krosumlabs D1]# ./p1.txt
+This is sample text
+Today:
+Tue Aug  6 10:15:22 IST 2024
+Login name:
+root
+./p1.txt: line 8: asdfasfds: command not found
+./p1.txt: line 9: asfasdfsad: command not found
+./p1.txt: line 10: asfasfsf: command not found
+Thank you
+[root@krosumlabs D1]# vi p1.txt
+[root@krosumlabs D1]# cat p1.txt
+echo This is sample text
+echo "Today:"
+date
+sleep 3
+echo "Login name:"
+whoami
+sleep 2
+echo Thank you
+[root@krosumlabs D1]# ./p1.txt >r1.log
+[root@krosumlabs D1]# ls
+d1.txt  p1.log  p1.txt  r1.log
+[root@krosumlabs D1]# ls -t
+r1.log  p1.txt  p1.log  d1.txt
+[root@krosumlabs D1]# cat r1.log
+This is sample text
+Today:
+Tue Aug  6 10:16:28 IST 2024
+Login name:
+root
+Thank you
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# datee >d1.log
+-bash: datee: command not found
+[root@krosumlabs D1]# ls
+d1.log  d1.txt  p1.log  p1.txt  r1.log
+[root@krosumlabs D1]# cat d1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# datee 2>d1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ps >p1.log 2 >err.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# psfsddsfs >p1.log 2 >err.log
+-bash: psfsddsfs: command not found
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# psfsddsfs >p1.log 2>err.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat err.log
+-bash: psfsddsfs: command not found
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls
+d1.log  d1.txt  err.log  p1.log  p1.txt  r1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ps >>p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# date >>p1.log
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# cat p1.log
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+ 4524 pts/0    00:00:00 ps
+Tue Aug  6 10:25:32 IST 2024
+[root@krosumlabs D1]#
+
+##################################################################
+ vi emp.csv 
+101,raj,sales,pune,1000
+102,leo,SALES,bglore,2000
+124,arun,HR,hyd,3000
+423,leo,prod,mumbai,4000
+312,zion,prod,pune,2300
+412,anu,sales,bglore,3332
+402,theeb,Hr,mumbai,3000
+923,vijay,sales,chennai,8932
+:wq
+
+grep
+----
+ |->search a pattern from input
+			   |->file <or> PIPE
+
+grep -option pattern inputFile
+             -------
+
+-------
+rpm -qa  <== list of installed software packages
+-------
+ |
+How to search python3 is installed or not ?
+          
+rpm -qa|grep python3 
+
+
+grep -option <pattern> inputFile
+
+-i - ignore pattern case
+-n - matched pattern line Number
+-v - not matched the pattern
+-w - word based search
+-c - count 
+
+-e - extened grep 
+-E 
+<or>
+egrep
+
+-l - matched pattern file list
+-R - Recursive search
+
+[root@krosumlabs D1]# grep -e sales -e prod -e DBA -e admin emp.csv
+101,raj,sales,pune,1000
+423,leo,prod,mumbai,4000
+312,zion,prod,pune,2300
+412,anu,sales,bglore,3332
+923,vijay,sales,chennai,8932
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# egrep "sales|prod|DBA|admin" emp.csv
+101,raj,sales,pune,1000
+423,leo,prod,mumbai,4000
+312,zion,prod,pune,2300
+412,anu,sales,bglore,3332
+923,vijay,sales,chennai,8932
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# grep -E "sales|prod|DBA|admin" emp.csv
+101,raj,sales,pune,1000
+423,leo,prod,mumbai,4000
+312,zion,prod,pune,2300
+412,anu,sales,bglore,3332
+923,vijay,sales,chennai,8932
+[root@krosumlabs D1]#
+ 
+#################################################################
+
+find - search a file <or> directory
+-----
+Syntax:-
+---------
+find <SearchPath> -name <SearchFile>
+      ---------
+	
+root@host~]# find /etc -name network.cfg
+     		  ----
+search a network.cfg file from /etc directory
+
+root@host~]# find  -name network.cfg
+search a network.cfg file from <current directory>
+
+
+[root@krosumlabs D1]# find -name emp.csv
+./emp.csv
+[root@krosumlabs D1]# find /root -name emp.csv
+/root/emp.csv
+/root/D1/emp.csv
+[root@krosumlabs D1]# find -name passwd
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ls
+d1.log  d1.txt  emp.csv  err.log  IP  L1  p1.log  p1.txt  r1.log  s1.csv
+[root@krosumlabs D1]# find /etc -name passwd
+/etc/passwd
+/etc/pam.d/passwd
+[root@krosumlabs D1]# find / -name passwd
+/sys/fs/selinux/class/passwd
+/sys/fs/selinux/class/passwd/perms/passwd
+/etc/passwd
+/etc/pam.d/passwd
+/usr/bin/passwd
+[root@krosumlabs D1]# find / -name "*.c"
+/usr/lib/firmware/isci/create_fw.c
+...
+
+[root@krosumlabs D1]# find / -name "*.sh"|wc -l
+353
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# find /etc -name "*.sh"|wc -l
+9
+[root@krosumlabs D1]# find /var/log -name "*.sh"|wc -l
+0
+[root@krosumlabs D1]# find /var/log -name "*.log"|wc -l
+17
+[root@krosumlabs D1]#
+########################################################################
+cut command 
+----
+cut -d<fsep> -f<fieldNumber>  inputFile
+    --------
+
+cut -d" " # OK
+cut -d"   " <== Error
+
+
+command1|command2|command3
+	--	 --
+
+A = 10 + 20 <==(1)
+B = A + 30 <==(2)
+C = B + 40 <== (3)
+|
+print C  			
+
+A|B|C
+
+less - page by page - q PgUp PgDn cursor keys Home End
+more - line by line - q cursor keys , spacebar 
+
+head - from top to bottom - 10 lines 
+tail - from bottom to top - 10 lines
+
+gzip => compress a reg.file
+|
+-> gzip filename
+filename.gz
+
+-> zcat filename.gz
+-> gunzip filename.gz
+
+-> cat filename
+
+
+tar
+   -> create    tar -cvf backup.tar <list of files/directories>
+   -> list	tar -tvf backup.tar 
+   -> Extract   tar -xvf backup.tar
+
+tar -cvf B1.tar *
+tar -tvf B1.tar
+tar -xvf B1.tar
+###################################################################################
+process
+-------
+	
+	User Process
+	- by user
+	- TTY: pts/<port>
+	- after login our session
+	  user process gets started
+	|
+	- parent is: current working shell
+
+	system process
+	---------------
+	- by systemd (PID:1)
+	|
+	- TTY: ? 
+	|
+	- before login our session system process are gets started
+	|
+	- all the system process parent is systemd
+
+
+ ps
+ ps -e <or> ps -A - list of all the process
+
+ ps -e|grep -i <processname>
+ 
+ ps -e|grep <pid>
+
+ ps -l  Vs ls -l
+ 
+
+nice range
+-20  0  20
+-20 -19 -18 .. -3 -2 -1 0  1 2 3  4 5 .. 19 20 
+----------------------  |  -----------------------
+  High			|	Low
+			default NI value
+
+nice --19 processName
+     |---//-19
+
+nice -19 processname
+      --//+19
+
+ps -e
+ps -f
+ps -l
+
+ps -elf
+ps -a
+
+kill -l
+kill -9 <PID>
+
+
+[root@krosumlabs D1]# ps -l
+F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+4 S     0  1365  1357  0  80   0 - 29288 do_wai pts/0    00:00:00 bash
+0 R     0  9386  1365  0  80   0 - 37643 -      pts/0    00:00:00 ps
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ps -f
+UID        PID  PPID  C STIME TTY          TIME CMD
+root      1365  1357  0 08:26 pts/0    00:00:00 -bash
+root      9628  1365  0 12:15 pts/0    00:00:00 ps -f
+[root@krosumlabs D1]# ping 127.0.0.1 >r1.log
+^C[root@krosumlabs D1]# ping 127.0.0.1 >r1.log
+Killed
+[root@krosumlabs D1]# ps
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+10030 pts/0    00:00:00 ps
+[root@krosumlabs D1]# clear
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ping 127.0.0.1 >r1.log
+^C[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# ping 127.0.0.1 >r1.log &
+[1] 10109
+[root@krosumlabs D1]# ps
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+10109 pts/0    00:00:00 ping
+10128 pts/0    00:00:00 ps
+[root@krosumlabs D1]# jobs
+[1]+  Running                 ping 127.0.0.1 > r1.log &
+[root@krosumlabs D1]#
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# fg %1
+ping 127.0.0.1 > r1.log
+^C[root@krosumlabs D1]# fg %1
+-bash: fg: %1: no such job
+[root@krosumlabs D1]# ping 127.0.0.1 >r1.log &
+[1] 10338
+[root@krosumlabs D1]#
+[root@krosumlabs D1]# fg %1
+ping 127.0.0.1 > r1.log
+^Z
+[1]+  Stopped                 ping 127.0.0.1 > r1.log
+[root@krosumlabs D1]# ps
+  PID TTY          TIME CMD
+ 1365 pts/0    00:00:00 bash
+10338 pts/0    00:00:00 ping
+10383 pts/0    00:00:00 ps
+[root@krosumlabs D1]# jobs
+[1]+  Stopped                 ping 127.0.0.1 > r1.log
+[root@krosumlabs D1]# fg %1
+ping 127.0.0.1 > r1.log
+^C[root@krosumlabs D1]#
+###################################################################################
+
+
+
+
+
+
+		
+
+
+    
