@@ -1,0 +1,601 @@
+Day1 - Linux ->Kernel ->File,Process
+       File Types
+       File structure
+       File manipulation commands
+Day2 - File Permission
+       Redirection
+       Filters-grep,find,cut,head,tail,less,more
+       process - ps
+		 ps -A <or> -e 
+		 ps -a ; ps -l ; ps -f
+		 ps -elf
+		 ps -elf|grep -i <processName>
+		 ..
+		 kill -9 <PID>
+		 jobs
+#############################################################################
+Day3 - shell script
+----
+shell
+-----
+  	command (Child Process)
+	---------------//shell - Parent Process
+	
+Types of shell
+-----------------
+1. BourneShell (sh) -   expr 10 + 20
+2. KornShell (ksh)  -   echo $((10+20))
+|
+3. CShell (csh) - like C style code
+|
+4. tcsh ->expect 
+
+5. BourneAgainSHell(BASH) - GNU - default shell in Linux
+
+How to check list of available shells in my working linux?
+
+cat /etc/shells
+
+How to check current working shell?
+ps
+<or>
+echo $0 <== special variable
+     --
+
+Login as: root
+password:
+
+root@host~]# echo $0
+csh
+root@host~]# sh {Enter} <== subshell(Subprocess)
+sh-4.3#
+sh-4.3# echo $0
+sh
+sh-4.3#
+sh-4.3# <command> <-- interpreted by sh
+	---------//parent is sh
+sh-4.# exit
+root@host~]# echo $0
+csh
+root@host~]#
+#########################################################################################
+
+#!/bin/bash <== shabang
+
+
+Host01
+-------
+root@host01~]# echo $0
+bash
+root@host01~]# vi p1.sh
+echo "Test-1"
+....
+....
+....
+echo "End of the script"
+:wq
+root@host01~]# chmod a+x p1.sh
+root@host01~]# ./p1.sh
+Test-1
+...
+...//ok
+...
+End of the script					Host02
+root@host01~]# -------------------------->-------	root@host02~]# echo $0
+							csh
+							root@host02~]# ./p1.sh{enter}
+							Test-1
+							....
+							.... //Error
+							....
+							End of the script
+							root@host02~]#
+
+
+root@host01~]# vi p2.sh {Enter}
+#!/bin/bash
+....
+....
+:wq
+root@host01~]# chmod a+x p2.sh
+root@host01~]# ./p2.sh
+...//OK
+root@host01~]# ---------------------------------> root@host02~]# echo $0 ->csh
+						  root@host02~]# ./p2.sh
+						  csh
+						  |
+						  bash  - subshell
+						    ....
+						    ....//OK
+						  exit
+						  root@host02~]# 
+
+################################################################################
+
+shell - supports single line comment and multiline comments
+		 ------------------	 -------------------
+			#			<<Flag
+
+
+################################################################################
+shell script
+	|
+	variable
+	   |->1.User defined variable
+	   |->2.Shell variable 
+	   |->3.Commandline args variable
+	   |->4.Array
+	operators
+	   |->1. arithmetic 2. relational 3.logical 4.file test
+	conditional statements
+	   |->if statement , case statement
+	looping statements
+	   |->conditional style loop
+	   |->collection style loop	
+	function
+	   |->simple function Call,Call with args,scope,return,loadablecode
+
+shell script file is plain text file
+filename: p1.sh <or> p1 //OK
+#######################################################################################
+Linux commandline structure
+
+1. command only style
+  
+   root@host~]# whoami
+		hostname
+		date
+		ls
+		ps
+		pwd
+		..
+
+2. command arguments style
+
+   root@host~]# echo Hello shell script
+  		---- arg1   arg2  arg3
+
+   root@host~]# echo "Hello shell script"	
+		----  <================>
+   |
+   root@host~]# ls -l p1.txt p2.txt
+		--- = ====== ======
+
+3. command with `command` style    `` <== backquote - this is NOT a single '' quote
+		.......
+   root@host~]# echo "Login name is:whoami"  # command with args style
+	Vs
+   root@host~]# echo "Login name is:`whoami`" # command with `command` style
+
+	<or>
+    
+   command $(command) same as command `command`
+	   -----------		       --------
+
+
+
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# whoami
+root
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "Login name is:whoami"
+Login name is:whoami
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "Login name is:`whoami`"
+Login name is:root
+[root@krosumlabs D3]# ls -l /etc/passwd
+-rw-r--r--. 1 root root 1050 Aug  7 09:38 /etc/passwd
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "About /etc/passwd details ls -l /etc/passwd"
+About /etc/passwd details ls -l /etc/passwd
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "About /etc/passwd details `ls -l /etc/passwd`"
+About /etc/passwd details -rw-r--r--. 1 root root 1050 Aug  7 09:38 /etc/passwd
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# ps -e|wc -l
+97
+[root@krosumlabs D3]# echo "Total no.of process count is:ps -e|wc -l"
+Total no.of process count is:ps -e|wc -l
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "Total no.of process count is:`ps -e|wc -l`"
+Total no.of process count is:98
+[root@krosumlabs D3]#
+[root@krosumlabs D3]# echo "Test message `OK`"
+-bash: OK: command not found
+Test message
+[root@krosumlabs D3]# echo "Total no.of process count is:$(ps -e|wc -l)"
+Total no.of process count is:98
+[root@krosumlabs D3]#
+################################################################################################
+	
+shell script is dynamic type language
+		------------------------
+			|->there is no main()
+			|->there is no prototype declaration
+			|->there is no primitive data type declaration
+		
+
+variable - placeholder - holding a value
+
+user defined variable
+-----------------------
+	|-> variable name starts with  A-Za-z_ 
+	
+	variable=value 
+		---
+		 |->there is no space in = LHS,RHS
+
+	IP="10.20.30.40"
+	server="Linux"  # server=Linux //OK	server="RedHat Linux 8.3" //OK
+	count=84
+	cost=3432.23
+
+	Fname="/etc/passwd"
+	
+	echo IP => IP	Vs   echo $IP =>10.20.30.40  <= echo ${IP}
+							
+	$variable <or> ${variable}
+	---------      -----------
+	
+	Fname="/etc/passwd"
+	ls -l $Fname
+
+
+data1
+data2  ESC 3yy
+data3
+data4
+data5  press p
+
+Write a shell script
+initialize a filename,index,file size,username,permission
+use echo - display initialized filedetails 
+
+Fname="/var/log/LB.log"
+Findex=4232
+fsize="2KB"
+fuser="userA"
+fperm="rw-"
+
+echo "File name is:$Fname"
+echo "$Fname Index Number is:$Findex"
+echo "$Fname Size:$fsize"
+echo "The File $Fname user name is:$fuser"
+echo "Permission details: $perm"
+#############################################################################
+Multiline statement
+---------------------
+   
+_____________//this is primary prompt
+root@host~]# echo "data1{Enter}
+>data2
+>data3
+>data4
+>data5"
+|__Secondary prompt
+#############################################################################
+					   echo
+Keyboard(<STDIN>)----<------shellscrip------->--------Monitor(STDOUT)
+		    read
+
+Syntax:-
+-----------
+read UDV
+
+echo "Enter a filename:"
+read Fname # interface to keyboard
+echo "File name:$Fname"
+
+|
+modify the last script
+- read input from <STDIN>
+- use echo - display file details 
+
+Note: use multiline statement
+----
+	
+read -p "User defined prompt message"<space>UDV
+
+echo "Enter a filename:"		read -p "Enter a filename:" Fname
+read Fname			Vs	echo "File name is:$Fname"
+echo "File name is:$Fname"
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+data1 ESC yy - copy the current line -> p (paste)
+
+data3 ESC dd - delete the current line
+data4 ESC 3dd - delete 3lines 
+data5
+data6
+
+unix shell script
+     ESC + dw - delete a word
+     ESC + x - delete a char 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+How to initialize command results to UDV ?
+
+  variable=`command` <or>  variable=$(command)
+
+ Note: don't use command name as a variable  
+
+ DATE=`date` # OK	Vs  date=`date`     ls=10
+			    
+ server=`uname`
+ version=`uname -r`
+ count=`ps -e|wc -l`
+ 	
+ echo "My server name:$server
+ -------------------------------------
+ version is:$version
+ -------------------------------------
+ Total no.of process count:$count
+--------------------------------------"
+
+#############################################################################################
+
+ Shell variable
+	<or>
+ - pre-defined variables
+	<or>
+ - builtin variables
+	<or>
+ - env variables
+	<or>
+ - exported variables
+
+env{Enter}
+---//command
+
+export variable=value -->(1)
+	<or>
+  variable=value	->(2)
+  export variable
+
+
+
+export DB="/usr/bin/oracle"
+       --
+export PYTHONPATH="/root/project"
+	------		
+export PERL5LIB="/root/mycode/"
+	------
+
+
+ON ->POST ->MBR ->BootLoader ->OS(Kernel) ->Systemd(PID:1) ->system process(?)
+								|
+								getty(?) <or> login<?>
+								|
+								shell(CLI)
+								|
+				read and execute /etc/profile <== Global Config script
+						 -------------
+Login as:root		Login as: student
+password:		password:
+            |                      |
+	read and execute /etc/profile 
+root@host~]#		student@host~]$
+
+root@host~]# ls -a		student@host~]$  ls -a
+                ---//all
+
+.bashrc
+.bash_history
+
+root@host~]# vi .bashrc				karthik@host~]$ vi /home/karthik/.bashrc
+						
+export DB="/usr/bin/oracle"			export PYTHONPATH="/home/karthik/ERP"
+       --					:wq
+export PYTHONPATH="/root/project"		
+	------					karthik@host~]$
+export PERL5LIB="/root/mycode/"
+	------
+:wq
+root@host~]# 
+
+
+##################################################################################
+operators
+	   |->1. arithmetic 2. relational 3.logical 4.file test
+	
+1. arithmetic
+--------------
+ 1. expr command
+ 2. $((expression))
+
+expr
+----
+expr<space>Operand<space>OPERATOR<space>Operand
+|
+expr 10 + 20	Vs	expr 10+20
+     --------		     ------
+	|			|
+	30			10+20
+
++ - * / %
+    |
+   meta char
+   *.log *.csv
+   ls p*
+
+
+[student@krosumlabs ~]$ expr 10+20
+10+20
+[student@krosumlabs ~]$ expr 10+ 20
+expr: syntax error
+[student@krosumlabs ~]$ v=`expr 10 + 20`
+[student@krosumlabs ~]$ echo $v
+30
+[student@krosumlabs ~]$ var=120
+[student@krosumlabs ~]$ # $var value is:120
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$ echo "$var value is:$var"
+120 value is:120
+[student@krosumlabs ~]$ echo "\$var value is:$var"
+$var value is:120
+[student@krosumlabs ~]$ echo "Hello"
+Hello
+[student@krosumlabs ~]$ echo \"Hello\"
+"Hello"
+[student@krosumlabs ~]$ expr 10 * 3
+expr: syntax error
+[student@krosumlabs ~]$ expr 10 \* 3
+30
+[student@krosumlabs ~]$
+
+
+ 2. $((expression))
+ ----------------------
+ [student@krosumlabs ~]$ echo $((10+20))
+30
+[student@krosumlabs ~]$ echo $((10+           20))
+30
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$ echo $((10*3))
+30
+[student@krosumlabs ~]$ echo $((10*3.3))
+-bash: 10*3.3: syntax error: invalid arithmetic operator (error token is ".3")
+[student@krosumlabs ~]$
+[student@krosumlabs ~]$ expr 10.3 + 2
+expr: non-integer argument
+[student@krosumlabs ~]$
+
+2. relational 
+----------------
+	|-> numbers:  -eq -ne -lt -le -gt -ge
+
+		10 >5 ->  10 -gt 5
+		
+		a=45
+		b=30
+		a > b  ->  $a -gt $b
+		a < b  ->  $a -lt $b
+
+	|-> string:  ==   !=
+		     
+ command ->str 			command ->number
+ $var -> str			$var  ->number
+	-------//  == != 		-----------//-eq -ne -lt -le -gt -ge
+
+ "`whoami`" == "root"
+	<or>
+ `id -u` -eq 0
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	$? ->last command operation exit code
+				    ----------
+command1				|->0 <== Success ; non-zero(1 2 3 ..126 127)//failed 
+command2					
+echo $? <== command2 exit status	 $? -eq 0   ;   $? -ne 0 
+command3
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+test <or> [ ]  <== shell test operator
+
+test<space>Expression 
+echo $?
+
+<or>
+[<space>Expression<space>]
+echo $?
+
+conditional statements
+--------------------------
+ ->Code block - execute only one time
+
+if statement
+---------------
+if only style
+if else style
+if elif elif elif style 
+
+if<space>[  expression ]
+then
+     <True block>
+fi 
+
+if<space>[  expression ]
+then
+     <True block>
+else
+     <False block>
+fi
+
+if<space>[  condition1 ]
+then
+     <True block>
+elif<space>[ condition2 ]
+then
+     True block
+...
+elif<space>[ conditionN ]
+then
+    ...
+else
+	<False block>
+
+fi
+
+#########################################################################################
+
+file: p1.sh
+____________
+
+     1  if [ "`whoami`"  == "root" ]
+     2  then
+     3          read -p "Enter a shell name:" shvar
+     4
+     5          if [ "$shvar" == "bash" ]
+     6          then
+     7                  fname="/etc/bashrc"
+     8          elif [ "$shvar"  == "ksh" ]
+     9          then
+    10                  fname="/etc/kshrc"
+    11          elif [ "$shvar" == "csh" ]
+    12          then
+    13                  fname="/etc/cshrc"
+    14          else
+    15                  shvar="/bin/nologin"
+    16                  fname="/etc/profile"
+    17          fi
+    18  else
+    19          echo "Sorry your not root user"
+    20          exit # exit from script
+    21  fi
+    22  echo "Shell name:$shvar profile filename:$fname"
+    23
+[student@krosumlabs ~]$ ./p18.sh
+Sorry your not root user
+[student@krosumlabs ~]$ cat p18.sh
+if [ "`whoami`"  == "root" ]
+then
+        read -p "Enter a shell name:" shvar
+
+        if [ "$shvar" == "bash" ]
+        then
+                fname="/etc/bashrc"
+        elif [ "$shvar"  == "ksh" ]
+        then
+                fname="/etc/kshrc"
+        elif [ "$shvar" == "csh" ]
+        then
+                fname="/etc/cshrc"
+        else
+                shvar="/bin/nologin"
+                fname="/etc/profile"
+        fi
+else
+        echo "Sorry your not root user"
+        exit # exit from script
+fi
+echo "Shell name:$shvar profile filename:$fname"
+
+
+##########################################################################################
+
+
+
+
+
