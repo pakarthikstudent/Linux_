@@ -1,0 +1,455 @@
+Recap
+--------
+variable
+    |->  UDV   variable=value
+			^^^^^^
+			 number,string,command,command_result
+
+    |-> export var=value // ~/.bashrc
+Operators
+    |->expr <value1> <Operator> <value2>
+	    -------------------------------//infix expression
+    |->echo $((expression))
+    
+    |->   $?
+	  -- 0 (Success); (non-zero - Failed)
+	
+    |->  -eq -ne -lt -gt -le -ge
+	  ==  !=
+
+     test <or> [ ]
+
+Conditional statement
+    |-> if keyword
+	--
+	 |-> 1. if only  2. if..else   3.if elif elif elif ..else
+
+if [ condition ]
+then
+	True
+else
+	False
+fi
+#########################################################################################
+Write a shell script
+read a command from <STDIN>
+|
+execute a command - redirect commands result(STDOUT - r1.log;STDERR - err.log)
+		    external file
+|
+using $? - display execution is success / failed.
+
+read -p "Enter any Linux Command:" cmd
+
+$cmd >>r1.log 2>>err.log
+
+if  [ $? -eq 0 ]
+then
+	echo "Command $cmd execution is successful"
+else
+	echo "Command $cmd execution is failed"
+fi
+
+-------------------------------------------------------------------------------
+Logical operators
+-------------------
+ Logical AND  -a 
+ Logical OR   -o
+ Logical NOT   !
+
+if [ "`uname`"  == "Linux" -a "$SHELL" == "/bin/bash" ]
+then
+	echo "True - block"
+else
+	echo "False - block"
+fi
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+shell script - Linux command based (ex: grep <pattern> <inputFile>)
+Vs
+Perl script - function based (portable script)(ex: grep(/pattern/,@Array);)
+							 .......  ......
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+File Test Operators
+--------------------
+ |->File Types and File mode(read;write;execute)
+    ----------               -r   -w     -x
+
+Linux File Types
+-----------------
+1. Regular File <or> Ordinary file  -f 
+
+2. Directory  -d
+
+3. Link File (or) Symbolic link (or) Softlink  ln -s source target   -l
+
+4. Device file( /dev )
+		  |--->Character type device  (Keyboard,Terminal,Printer..) -c
+		  |--->Block type device    (HD,USB,storage devices)        -b
+
+5. named pipe (or) FIFO -p
+6. socket file          -S
+
+-e <filename>
+ |_____________________existing or not
+Syntax:-
+------------
+[<space>FileTestOperator<space><inputfile><space>]
+
+Test input file reg.file or not ?
+
+if [ -f <inputFile> ]
+then
+	....
+	....
+else
+	....
+fi
+
+Test input file is directory file or not?
+
+if [ -d <directoryname> ]
+then
+	....//True
+else
+	....//False
+fi
+
+
+ [ -f p1.sh -a -x p1.sh  ] ->True ->True block 
+  ---------    --------
+   C1		  C2
+ reg.file	 executable file
+    
+ ls -l p1.sh
+ rwxr-xr-x  .. p1.sh
+
+ ls -l p1.log
+ rw-r--r--  p1.log
+
+[ -f p1.log -a -x p1.log  ] ->False - else block 
+  ---------    --------
+   C1		  C2
+ reg.file	 executable file
+########################################################################################
+Task
+----
+	read a command from <STDIN>	(ex: date)
+	|
+	use redirection - redirect command to external file   echo "date" >p1
+	|
+	test - p1 is executable file or not
+				|	 |
+			run a file 	Give execute permission then run a file
+				|					|
+				redirect results to external file
+
+root@host~]# echo "date" >p1
+
+root@host~]# test -x p1
+
+root@host~]# echo $?
+
+0 -> root@host~]# ./p1 >r1.log 2>err.log
+
+1 -> root@host~]# chmod a+x p1 
+
+     root@host~]# ./p1 >r1.log 2>err.log
+
+
+read -p "Enter a command:" cmd
+echo "$cmd" >p1
+
+if [ -x p1 ]
+then
+	./p1 >r1.log 2>err.log
+else
+	chmod a+x p1
+	./p1 >r1.log 2>err.log
+fi
+########################################################################################
+Looping statements
+-------------------
+ ->Code block - execute more than one time.
+
+ 1. conditional style loop - based on the bool value the block will execute
+	|->while
+
+ 2. collection style loop - collection of items
+	|->for 
+
+ 1. conditional style loop - based on the bool value the block will execute
+	|->while
+
+ rule1: initialization  i=0   		i=15  		i=100   i=$n
+ |
+ rule2: condition	$i -lt 5	$i -gt 10 	
+ |
+ rule3: arithmetic	i=`expr $i + 1`  i=`expr $i - 1`
+
+initialization
+while<space>[ condition ]
+do
+	code block
+	<arithmetic>
+done
+
+
+ read a username from <STDIN>
+ |
+ test ->input username is admin <or> not
+			  |	      |
+			Success	     Failed
+
+
+  read -p "Enter a login name:" myname
+  
+  if [ "$myname" == "admin" ]
+  then
+	echo "Success"
+  else
+	echo "Failed"
+  fi
+
+
+break	- exit from loop
+continue - continue the loop
+--------------//looping keywords
+
+
+
+ 2. collection style loop - collection of items
+	|->for 
+
+ for variable in <list of items>
+ do
+	<Code block>
+ done
+			
+
+# for in do done - keywords 
+
+##########################################################################################
+conditional statement
+if 
+case
+----
+Syntax:-
+---------
+case value in
+pattern1)  pattern1 operation 
+	   ;;
+pattern2)  pattern2 operation
+	   ;;
+pattern3)  pattern3 operation
+	   ;;
+...
+patterN)   patterN operation
+	   ;;
+*)	default operation
+esac			
+
+#############################################################################
+
+variable=value <== initialization
+|
+vi ~/.bashrc
+export variable=value <== env variable <or> global variable
+	......
+
+|
+read -p "promptMessage:"  variable <== Interactive input - execution input
+
+file:pt.sh
+-----------------------------------
+read -p "Enter a filename:" Fname
+result=`ls -l $Fname`
+echo "About $Fname details:-
+----------------------------
+ $result
+---------------------------"
+-----------------------------------
+root@host~]# ./pt.sh {Enter}		Vs    root@host~]# ./p1.sh <User-Input> {Enter}
+Enter a filename:<User-Input>					   ^^^^^^^^^^^^
+		 ^^^^^^^^^^^^					   RuntimeInput
+		ExecutionInput
+
+Commandline arguments
+-----------------------
+   |-> Runtime inputs
+   |-> Non-Interactive inputs
+   |-> Positional Parameters $1 $2 $3 $4 ....$9 
+		<or>
+		${n}
+		  |__nth argument
+
+	echo $1  same as ${1}
+	echo $5  same as ${5}
+	10th args ->${10}
+	15th args ->${15}
+	3rd args ->echo $3 <or> ${3}
+
+  |-> $# <or> ${#} - Total no.of args 
+
+	if [ $# -eq 0 ]
+  	then
+		echo "Commandline args is empty args"
+	fi
+
+  |-> $@ <or> $* 	- list of all
+      ${@}    ${*}
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+old version:
+echo $1         $2          $3 
+     |_1st arg  |_2nd args  |_3rd args
+
+shift 9
+echo $1                 $2                   $3
+      |__10th argument   |__11th argument     |__12th argument
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Write a shell script
+using commandline argument - pass a command as input
+|
+execute a command - redirect commands result(STDOUT - r1.log;STDERR - err.log)
+		    external file
+|
+using $? - display execution is success / failed.
+
+Validation: if command line argument is empty ->exit
+
+if [ $# -eq 0 ]
+then
+	echo "Usage:Sorry Commandline argument is empty"
+	exit
+fi
+
+$1 >r1.log 2>err.log
+
+if [ $? -eq 0 ]
+then
+	echo "Command:$1 execution is success"
+else
+	echo "Command:$1 execution is failed"
+fi
+
+####################################################################################
+
+root@host~]# echo $0 ->current working shell name
+		  --
+		  |__file:p1.sh
+		     ==========
+		      echo $0 ->scriptFileName
+		     ===========
+			./p1.sh  ->./p1.sh
+			/root/d4/p1.sh ---->/root/d4/p1.sh
+
+####################################################################################
+Array
+------
+ |-> variable - holding more than one different types of value
+				       -----------------------
+ |-> Collection of items(different types)
+ 
+ |-> Index based 
+ 
+ |-> To stores command results
+
+Syntax:-
+---------
+ArrayName=(List of items)
+
+os=(Linux Unix Winx Aix)
+      0    1    2    3  <== index
+
+file_info=(index.html 4KB web2 rwx /D1 98.23 56 "Red Hat Linux 7.5")
+		0     1    2    3   4    5   6   ------7---------- <== index
+
+command ->SingleValue(number,word)
+	  ---------------------------
+		|__ variable=`command`
+
+command ->MultipleValues(more than one lines,words etc.,)
+	  ---------------------------------------------------
+		|__ variable=(`command`)
+			|
+			Array
+
+How to fetch single item from an array?
+		
+	${ArrayName[index]}
+	
+	os=(Linux Unix Winx Aix)
+	echo ${os[0]} # Linux
+	echo ${os[1]} # Unix
+	echo ${os[9]} # empty 
+	
+How to get list of all the items ?
+	
+	${ArrayName[@]} <or> ${Arrayname[*]}
+
+	os=(Linux Unix Winx Aix)
+	echo ${os[@]} # Linux Unix Winx Aix
+
+	for var in ${os[@]}
+	do
+		...
+	done
+
+Total no.of array items -> ${#arrayname[@]}
+
+
+
+
+[root@krosumlabs D4]# whoami
+root
+[root@krosumlabs D4]# ps -e|wc -l
+97
+[root@krosumlabs D4]# hostname
+krosumlabs
+[root@krosumlabs D4]# ls -l p1
+-rwxr-xr-x. 1 root root 184 Aug  8 09:18 p1
+[root@krosumlabs D4]#
+[root@krosumlabs D4]# v=`ls -l p1`
+[root@krosumlabs D4]#
+[root@krosumlabs D4]# a=(`ls -l p1`)
+[root@krosumlabs D4]#
+[root@krosumlabs D4]# echo $v
+-rwxr-xr-x. 1 root root 184 Aug 8 09:18 p1
+[root@krosumlabs D4]# echo ${a[@]}
+-rwxr-xr-x. 1 root root 184 Aug 8 09:18 p1
+[root@krosumlabs D4]#
+[root@krosumlabs D4]# echo ${a[1]}
+1
+[root@krosumlabs D4]# echo ${a[0]}
+-rwxr-xr-x.
+[root@krosumlabs D4]# echo ${a[8]}
+p1
+[root@krosumlabs D4]# echo "${a[8]} ${a[4]} ${a[0]}"
+p1 184 -rwxr-xr-x.
+######################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
