@@ -1,0 +1,401 @@
+Recap
+-------
+
+command -option arg1 arg2 .. argN -> result
+					|->STDOUT >result.log
+					|->STDERR 2>err.log
+	      ^^^^^^^^^^^^^^^^^^
+		|
+		Dynamic inputs <= variable=<Value>; read -p .... <variable>
+				  export variable=<value>
+				  $1 ..${n}
+				  Array=()
+ .......................
+	|
+	$? ->0 (Success); $? ->Non-Zero (Failed)
+
+looping statements
+|
+Function
+--------
+|->Code block - group of commands
+   ----------     
+
+|->function definition
+|->function Call - To invoke a definition
+
+function <functionName>(){
+		|
+		user defined
+}
+
+function <== shell keyword
+
+<functionName> # simple FunctionCall
+
+------------------------------------------------------
+function display(){
+	ps -f
+	uname -rs
+	whoami
+	hostname
+	echo "Total no.of process count:`ps -e|wc -l`"
+}
+list(){
+	echo "List of files:-"
+	ls -l
+}
+display
+list
+echo "This is main script-1"
+------------------------------------------------
+------------------------------------------------------------------
+list(){
+	echo "List of files:-"
+	ls -l $1 $3
+	echo "$@"
+	echo "Total no.of args:$#"
+}
+list # simple call
+
+list /etc/passwd /etc/shadow /var/log/messages # functionCall with args
+
+list $1 $2 $3 # list D1.log D2.txt D3.c 
+------------------------------------------------------------------------------
+  ./p1.sh D1.log D2.txt D3.c D4.java D5.py {Enter}
+	  -----  -----  ----  ----   -----
+	    cmdline args
+
+#########################################################################################
+
+bash is default shell any distribution of linux
+----
+all the linux commands are binary file (/bin:/sbin:/usr/bin:/usr/sbin)
+					^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+					  echo $PATH 
+alias D="date +%F"
+D ->date +%F o/p
+|
+not a binary file 
+D is a symbolic name  D ->date +%F
+.........................................PATH
+
+~/.bashrc <== personal profile file
+---------
+
+			/
+			|
+	------------------------------------------------
+	|			|
+	/etc			/proc
+
+/etc - configuration directory			/proc	 - virtual files
+-----						-----
+ - we can edit config parameters		 |->Size is 0 (Zero)
+ - reboot is required 
+						ls -ld /proc
+						ls /proc 
+						- we can edit config parameters
+						- reboot is not required.
+/proc <== directory 
+ |
+-------------------------
+ systemcall
+ |
+ [proc  vfat xfs nfs iso9660.. ]filesystem  - cat /proc/filesystems
+   				|	      ------------------------
+  				|			|->list of available filesystems
+ 				DD
+ 				|
+ 				DC
+ 				|
+----------------------------------------
+		CPU RAM HD IO network
+
+
+[root@krosumlabs D5]# ls -ld /proc
+dr-xr-xr-x. 108 root root 0 Aug  9 08:30 /proc
+[root@krosumlabs D5]#
+[root@krosumlabs D5]# cat /etc/hostname
+example.org
+[root@krosumlabs D5]# hostname
+krosumlabs
+[root@krosumlabs D5]#
+[root@krosumlabs D5]# cat /proc/sys/kernel/hostname
+krosumlabs
+[root@krosumlabs D5]# echo "test123.com" >/proc/sys/kernel/hostname
+[root@krosumlabs D5]#
+[root@krosumlabs D5]# cat /proc/sys/kernel/hostname
+test123.com
+[root@krosumlabs D5]# hostname
+test123.com
+[root@krosumlabs D5]# hostname
+test123.com
+[root@krosumlabs D5]# hostname
+test123.com
+[root@krosumlabs D5]# cat /etc/hostname
+example.org
+[root@krosumlabs D5]# echo "krosumlabs" >/proc/sys/kernel/hostname
+[root@krosumlabs D5]# hostname
+krosumlabs
+[root@krosumlabs D5]# cat /etc/hostname
+example.org
+[root@krosumlabs D5]# echo "krosumlabs" >/etc/hostname
+[root@krosumlabs D5]# cat /etc/hostname
+krosumlabs
+[root@krosumlabs D5]#
+
+##############################################################################
+vmstat <delay> <count>
+iostat <delay> <count>
+mpstat <delay> <count>
+
+top
+htop
+iotop
+			 
+ctrl+C - Exit Signal - force to terminate a process 
+ctrl+Z - Stop Signal - stop the process - we can see the process details (jobs;top)
+
+
+ P1 - Wait <-----
+ | 		|
+ P2 - R+ .... Exit
+
+ P1 <== killed
+ |
+ P2 - R+ ... //orphan process <== systemD(PID:1)
+				
+	PID	PPID
+	102	101
+	..
+	..
+	102	1
+ 		
+ P1 - Wait  		exit signal is blocked
+ |			|
+ P2 - R+ ... Exit --//blocked   //zombie 
+
+ ps -elf|grep <PID>
+ 
+ PID PPID
+      ...
+
+free
+top
+ P <== uppercase %cpu
+ M <== uppercase %mem
+
+pstree - process tree structure
+
+########################################################################
+network
+---------
+ip addr <or> ip a 
+
+Ethernet -> eth0 eth1 eth2 enp0s0 ...
+loopback -> lo - localhost 127.0.0.1
+
+ls /etc/sysconfig/network-scripts/ifcfg-<interfaceName>
+
+root@host01~]# /etc/hosts
+FQDN IP alias
+
+host02.example.com	192.168.1.5  host02
+------------------      ------------ -----------
+
+ping host02
+<or>
+ping host02.example.com
+<or>
+ping 192.168.1.5
+-------------------------------
+ssh host02 <or> ssh host02.example.com <or> ssh 192.168.1.5
+
+#########################################################################################
+
+User Management 
+----------------
+
+Linux follows UPG (User Private Group) policy
+	      -------------------------
+	
+useradd <username>	 ex: useradd arun  ->  /home/arun  login as:arun
+usermod							   password:
+userdel							   arun@host~]$ vi p1.txt
+									 ..
+groupadd <groupname>					   arun@host~]$ ls -l p1.txt
+groupmod						   -rw-rw-r-- 1 arun arun
+groupdel
+
+/etc/passwd - user details(username,user id,login shell,login path etc)
+-----------
+   |<-- any user canable to read
+/etc/shadow
+----------
+  |<--- password info; aging details
+  |
+  |<-- root user only can able to read 
+
+
+root@host~]# useradd userA
+root@host~]# passwd userA
+Enter a password:
+re-enter a password:
+
+root@host~]#
+
+root@host~]# su - userA		Vs	student@host~]$ su - userA
+userA@host~]$				Enter a password: <userA password>
+					userA@host~]$ whoami
+					userA
+					userA@host~]$ echo $LOGNAME
+					userA
+userA@host~]$ su - {Enter}
+Enter password: <root user password>
+
+#####################################################################
+
+root@host~]# <we can do admin activity>	student@host~]$ pwd
+					/home/student
+						
+					student@host~]$ su - {Enter}
+					Enter password:
+					root@host~]# <admin-command> <== by root
+					
+userA@host~]$ sudo useradd userB
+os ask - enter your sudo password
+		    --------------//userA login password
+os will verfify  test input userB is sudo user
+if not a sudo users ->security mail will send to root user
+
+
+[root@krosumlabs D5]# su - userB
+[userB@krosumlabs ~]$
+
+[userB@krosumlabs ~]$ sudo useradd userC
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for userB:
+userB is not in the sudoers file.  This incident will be reported.
+[userB@krosumlabs ~]$
+
+[root@krosumlabs D5]#
+You have mail in /var/spool/mail/root
+
+[root@krosumlabs D5]# cat /var/mail/root
+
+From root@krosumlabs.localdomain  Fri Aug  9 11:53:07 2024
+Return-Path: <root@krosumlabs.localdomain>
+X-Original-To: root
+Delivered-To: root@krosumlabs.localdomain
+Received: by krosumlabs.localdomain (Postfix, from userid 0)
+        id 6DF603085D0D; Fri,  9 Aug 2024 11:53:07 +0530 (IST)
+To: root@krosumlabs.localdomain
+From: userB@krosumlabs.localdomain
+Auto-Submitted: auto-generated
+Subject: *** SECURITY information for krosumlabs ***
+Message-Id: <20240809062307.6DF603085D0D@krosumlabs.localdomain>
+Date: Fri,  9 Aug 2024 11:53:07 +0530 (IST)
+
+krosumlabs : Aug  9 11:53:07 : userB : user NOT in sudoers ; TTY=pts/1 ; PWD=/home/userB ; USER=root ; COMMAND=/sbin/useradd userC
+------------------------------------------------------------------------------------------------------------------------------------------
+[root@krosumlabs D5]# whatis who
+who (1)              - show who is logged on
+[root@krosumlabs D5]# whatis w
+w (1)                - Show who is logged on and what they are doing.
+[root@krosumlabs D5]#
+[root@krosumlabs D5]# w
+ 11:40:13 up  3:09,  4 users,  load average: 0.01, 0.02, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     tty1                      08:33    3:06m  0.01s  0.01s -bash
+root     pts/0    192.168.1.2      08:34    1:52m  0.05s  0.05s -bash
+root     pts/1    192.168.1.2      09:33   29.00s  0.07s  0.00s vi p1
+root     pts/2    192.168.1.2      09:47    5.00s  0.29s  0.00s w
+[root@krosumlabs D5]# w
+ 11:41:41 up  3:11,  4 users,  load average: 0.00, 0.01, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     tty1                      08:33    3:07m  0.01s  0.01s -bash
+root     pts/0    192.168.1.2      08:34    1:53m  0.05s  0.05s -bash
+root     pts/1    192.168.1.2      09:33    5.00s  0.07s  0.07s -bash
+root     pts/2    192.168.1.2      09:47    0.00s  0.29s  0.00s w
+[root@krosumlabs D5]#
+########################################################################################
+systemd - PID:1
+|
+systemctl <== admin command
+
+/bin/<file>
+	|___executable file - R+ 
+
+/bin/sshd
+     ----//R+  ------------   ssh <remotehost>{Enter}
+				...//OK
+/bin/sshd
+     |->Not active	      ssh <remotehost>{Enter} - unable to connect
+
+
+sshd.service
+---------------
+..
+ExecStart=/bin/sshd
+..
+---------------
+systemctl status <filename>.service
+
+systemctl status sshd.service
+
+systemctl start sshd.service
+systemctl stop sshd.service
+
+################################################################################
+
+vi editor
+----------
+
+from insert mode to command mode
+	
+	press ESC -> yy <== copy the line ; p paste
+		    Nyy <== Nlines are copied
+		    3yy <== 3 lines are copied ; p - paste
+
+ESC + u  -> undo
+ESC + .  -> redo
+		   yw <== word copy
+		   3yw <==  3words are copied ; p paste
+
+
+	press ESC -> dd - delete the line
+		     Ndd - Nlines are deleted
+		     dw - delete a word
+		    Ndw - Nwords are deleted
+		     x - delete single character
+yy  -> p 
+copy ->paste
+
+dd -> p
+|     |
+cut ->paste
+
+ESC :set nu
+ESC :set nonu
+ESC :%s/oldpattern/newString/ig <= i-ignore case; g-global replacement
+ESC :wq <== save and exit
+
+##################################################################################
+
+
+
+
+
+
+
+
+
+
